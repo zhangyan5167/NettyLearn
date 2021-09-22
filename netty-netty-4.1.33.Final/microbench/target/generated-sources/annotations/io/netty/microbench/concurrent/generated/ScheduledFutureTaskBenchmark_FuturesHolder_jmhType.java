@@ -1,0 +1,4 @@
+package io.netty.microbench.concurrent.generated;
+public class ScheduledFutureTaskBenchmark_FuturesHolder_jmhType extends ScheduledFutureTaskBenchmark_FuturesHolder_jmhType_B3 {
+}
+

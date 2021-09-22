@@ -1,0 +1,4 @@
+package io.netty.microbench.concurrent.generated;
+public class BurstCostExecutorsBenchmark_PerThreadState_jmhType extends BurstCostExecutorsBenchmark_PerThreadState_jmhType_B3 {
+}
+

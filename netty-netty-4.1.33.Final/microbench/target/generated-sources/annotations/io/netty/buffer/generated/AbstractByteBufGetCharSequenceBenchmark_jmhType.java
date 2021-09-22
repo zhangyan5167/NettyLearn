@@ -1,0 +1,4 @@
+package io.netty.buffer.generated;
+public class AbstractByteBufGetCharSequenceBenchmark_jmhType extends AbstractByteBufGetCharSequenceBenchmark_jmhType_B3 {
+}
+
