@@ -419,6 +419,7 @@ public class DefaultPromise<V> extends AbstractFuture<V> implements Promise<V> {
             final InternalThreadLocalMap threadLocals = InternalThreadLocalMap.get();
             final int stackDepth = threadLocals.futureListenerStackDepth();
             if (stackDepth < MAX_LISTENER_STACK_DEPTH) {
+                // TODO_ZXF 这里为何先将栈深度+1？
                 threadLocals.setFutureListenerStackDepth(stackDepth + 1);
                 try {
                     notifyListenersNow();
