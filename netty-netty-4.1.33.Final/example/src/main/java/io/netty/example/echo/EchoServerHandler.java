@@ -26,6 +26,12 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 public class EchoServerHandler extends ChannelInboundHandlerAdapter {
 
     @Override
+    public void channelActive(ChannelHandlerContext ctx) {
+        //ctx.channel().close();
+        //ctx.channel().parent().close();
+    }
+
+    @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
         ctx.write(msg);
     }
