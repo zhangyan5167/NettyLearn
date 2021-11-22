@@ -49,7 +49,13 @@ abstract class PoolArena<T> implements PoolArenaMetric {
     final int numSmallSubpagePools;
     final int directMemoryCacheAlignment;
     final int directMemoryCacheAlignmentMask;
+    // tiny 类型的 PoolSubpage 数组，每个元素都是双向链表。容量为32
+    // Tiny 类型内存区间：[16B，496B]，从 16B 开始，以 16B 递增，直到 496B，共有 31 个不同的值，tinySubpagePools 数组的大小为
+    // numTinySubpagePools = 32。申请 tiny 内存时，根据 PoolArena.tinyIdx方法计算出在数组中的 index.
     private final PoolSubpage<T>[] tinySubpagePools;
+    // small 类型的 PoolSubpage 数组，每个元素都是双向链表。容量为4
+    //Small 类型内存区间：512B、1KB、2KB、4KB，有 4 个不同的值，smallSubpagePools 数组的大小为 numSmallSubpagePools = 4。
+    // 申请 small 内存时，根据 PoolArena.smallIdx方法计算出在数组中的 index.
     private final PoolSubpage<T>[] smallSubpagePools;
 
     private final PoolChunkList<T> q050;
@@ -329,6 +335,12 @@ abstract class PoolArena<T> implements PoolArenaMetric {
         return table[tableIdx];
     }
 
+    /**
+     * 向上取整
+     *
+     * @param reqCapacity
+     * @return int
+     */
     int normalizeCapacity(int reqCapacity) {
         if (reqCapacity < 0) {
             throw new IllegalArgumentException("capacity: " + reqCapacity + " (expected: 0+)");

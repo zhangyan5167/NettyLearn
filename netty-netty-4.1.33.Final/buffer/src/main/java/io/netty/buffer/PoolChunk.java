@@ -224,6 +224,15 @@ final class PoolChunk<T> implements PoolChunkMetric {
 
     boolean allocate(PooledByteBuf<T> buf, int reqCapacity, int normCapacity) {
         final long handle;
+        /**
+         * 「(normCapacity & subpageOverflowMask) != 0」 方法解析：
+         * <p>
+         * subpageOverflowMask = ~(pageSize - 1); // ~(2^13-1) = 低13位都是0，高位全是1；
+         * subpageOverflowMask = 11111111111111111110000000000000
+         * normCapacity & subpageOverflowMask != 0时，说明第 14-31 位存在 1，即：normCapacity >= 2^13
+         * </p>
+         * 上述算法，相当于 ( length < pageSize ) 使用位运算的计算优化
+         */
         if ((normCapacity & subpageOverflowMask) != 0) { // >= pageSize
             handle =  allocateRun(normCapacity);
         } else {
@@ -233,6 +242,14 @@ final class PoolChunk<T> implements PoolChunkMetric {
         if (handle < 0) {
             return false;
         }
+        /**
+         * Deque<ByteBuffer> cachedNioBuffers 是什么？
+         * <p>
+         * 用作从内存中创建的字节缓冲区的缓存，这些仅是复制品的，所以只是内存本身的一个容器。
+         * 这些通常是 Pooled 池化 ByteBuf 中的操作所需要的，因此可能会产生额外的GC，通过缓存副本可以大大减少GC。
+         * 如果PoolChunk是非池化的，这个值可能为空，因为非池化ByteBuffer实例在这里没有任何意义。
+         * </p>
+         */
         ByteBuffer nioBuffer = cachedNioBuffers != null ? cachedNioBuffers.pollLast() : null;
         initBuf(buf, nioBuffer, handle, reqCapacity);
         return true;
