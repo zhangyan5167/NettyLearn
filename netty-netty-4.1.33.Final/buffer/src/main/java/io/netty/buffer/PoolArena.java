@@ -177,6 +177,11 @@ abstract class PoolArena<T> implements PoolArenaMetric {
         return (normCapacity & 0xFFFFFE00) == 0;
     }
 
+    /**
+     我们知道 PoolArena 分配的内存被释放时，Netty 并没有将缓存归还给 PoolChunk，
+     而是使用 PoolThreadCache 缓存起来，当下次有同样规格的内存分配时，直接从 PoolThreadCache 取出使用即可。
+     PoolArena#allocate() 的源码中看出，每次分配内存前先尝试去cache中拿。
+     */
     private void allocate(PoolThreadCache cache, PooledByteBuf<T> buf, final int reqCapacity) {
         final int normCapacity = normalizeCapacity(reqCapacity);
         if (isTinyOrSmall(normCapacity)) { // capacity < pageSize
