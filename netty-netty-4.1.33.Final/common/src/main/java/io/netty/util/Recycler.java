@@ -523,6 +523,9 @@ public abstract class Recycler<T> {
             return ret;
         }
 
+        /**
+         * scavenge（觅食）作用是从其他线程回收的对象实例中转移一些到 elements 数组当中，也就是说，它会想办法从 WeakOrderQueue 链表中迁移部分对象实例。
+         */
         boolean scavenge() {
             // continue an existing scavenge, if any
             if (scavengeSome()) {
